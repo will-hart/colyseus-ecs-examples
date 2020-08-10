@@ -1,16 +1,13 @@
 {
   "compilerOptions": {
     "outDir": "lib",
-    "target": "es6",
+    "target": "ES2019",
     "module": "commonjs",
     "strict": true,
     "strictNullChecks": false,
     "esModuleInterop": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "noUnusedLocals": true
   },
-  "references": [
-    {
-      "path": "../shared"
-    }
-  ]
+  "include": ["src/**/*.ts"]
 }

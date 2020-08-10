@@ -897,7 +897,7 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
-"@colyseus/ecs@0.4.0-alpha.3":
+"@colyseus/ecs@0.4.0-alpha.3", "@colyseus/ecs@^0.4.0-alpha.3":
   version "0.4.0-alpha.3"
   resolved "https://registry.yarnpkg.com/@colyseus/ecs/-/ecs-0.4.0-alpha.3.tgz#ec9e309df0411b2a697fda3698df5bd82fb613b1"
   integrity sha512-PrC1dlVbWY27E+pZ7vS3z+pmsSFD7QOlUnjjsO3UQ6Bkuf6J6eYvwQfWJ4usWBpG92ut624LjMZroR4LC4oNFA==

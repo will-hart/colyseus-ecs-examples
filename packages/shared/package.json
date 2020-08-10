@@ -19,7 +19,6 @@
     "typescript": "^3.9.7"
   },
   "dependencies": {
-    "@colyseus/ecs": "0.4.0-alpha.3",
-    "ecsy": "^0.4.0"
+    "@colyseus/ecs": "^0.4.0-alpha.3"
   }
 }
