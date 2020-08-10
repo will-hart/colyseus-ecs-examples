@@ -4,15 +4,15 @@ import {
   Circle,
   Movement,
   Intersecting,
+  MessageComponent,
   CanvasContext,
   DemoSettings,
   State,
-} from "../shared/src/components/components";
-import {
+  MessageSystem,
   MovementSystem,
   IntersectionSystem,
-} from "../shared/src/systems/systems";
-import { random } from "../shared/src/utils";
+  random,
+} from "@ecstest/shared";
 
 export class MyRoom extends Room<State> {
   world = new World();
@@ -28,8 +28,10 @@ export class MyRoom extends Room<State> {
       .registerComponent(Intersecting)
       .registerComponent(CanvasContext)
       .registerComponent(DemoSettings)
+      .registerComponent(MessageComponent)
       .registerSystem(MovementSystem)
-      .registerSystem(IntersectionSystem);
+      .registerSystem(IntersectionSystem)
+      .registerSystem(MessageSystem);
 
     // Used for singleton components
     var singletonEntity = this.world
@@ -58,7 +60,15 @@ export class MyRoom extends Room<State> {
       movement.velocity.set(random(-20, 20), random(-20, 20));
     }
 
+    let justDelayABit = 0;
+
     this.setSimulationInterval((delta) => {
+      justDelayABit++;
+      if (justDelayABit > 100) {
+        justDelayABit = 0;
+        this.world.createEntity().addComponent(MessageComponent);
+      }
+
       this.world.execute(delta);
     });
   }

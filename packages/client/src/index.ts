@@ -6,6 +6,8 @@ import {
   Circle,
   Intersecting,
   CanvasContext,
+  MessageComponent,
+  ClientMessageSystem,
   Movement,
   DemoSettings,
 } from "@ecstest/shared";
@@ -25,7 +27,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     .registerComponent(Intersecting)
     .registerComponent(CanvasContext)
     .registerComponent(DemoSettings)
-    .registerSystem(rendererSystem);
+    .registerComponent(MessageComponent)
+    .registerSystem(rendererSystem)
+    .registerSystem(ClientMessageSystem);
 
   // connect to colyseus' room
   const room = await client.joinOrCreate("my_room", {}, State);
@@ -33,7 +37,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   let previousTime = Date.now();
   room.onStateChange(() => {
-    console.log("STATE CHANGE!");
+    // console.log("STATE CHANGE!");
     const now = Date.now();
     world.execute(now - previousTime);
     previousTime = now;

@@ -1,5 +1,12 @@
 import { System } from "@colyseus/ecs";
-import { Circle, CanvasContext, DemoSettings, Movement, Intersecting } from "../components/components";
+import {
+  Circle,
+  CanvasContext,
+  DemoSettings,
+  Movement,
+  Intersecting,
+  MessageComponent,
+} from "../components/components";
 import { intersection } from "../utils";
 
 // import { System } from "../../build/ecsy.module.js";
@@ -13,104 +20,104 @@ import { intersection } from "../utils";
 // import { fillCircle, drawLine, intersection } from "./utils.js";
 
 export class MovementSystem extends System {
-    static queries = {
-        entities: { components: [Circle, Movement] },
-        context: { components: [CanvasContext, DemoSettings], mandatory: true }
-    };
+  static queries = {
+    entities: { components: [Circle, Movement] },
+    context: { components: [CanvasContext, DemoSettings], mandatory: true },
+  };
 
-    execute(delta: number) {
-        var context = this.queries.context.results[0];
-        let canvasWidth = context.getComponent(CanvasContext).width;
-        let canvasHeight = context.getComponent(CanvasContext).height;
-        let multiplier = context.getComponent(DemoSettings).speedMultiplier;
+  execute(delta: number) {
+    var context = this.queries.context.results[0];
+    let canvasWidth = context.getComponent(CanvasContext).width;
+    let canvasHeight = context.getComponent(CanvasContext).height;
+    let multiplier = context.getComponent(DemoSettings).speedMultiplier;
 
-        let entities = this.queries.entities.results;
-        for (var i = 0; i < entities.length; i++) {
-            let entity = entities[i];
-            let circle = entity.getMutableComponent(Circle);
-            let movement = entity.getMutableComponent(Movement);
+    let entities = this.queries.entities.results;
+    for (var i = 0; i < entities.length; i++) {
+      let entity = entities[i];
+      let circle = entity.getMutableComponent(Circle);
+      let movement = entity.getMutableComponent(Movement);
 
-            circle.position.x +=
-                movement.velocity.x * movement.acceleration.x * delta * multiplier;
-            circle.position.y +=
-                movement.velocity.y * movement.acceleration.y * delta * multiplier;
+      circle.position.x +=
+        movement.velocity.x * movement.acceleration.x * delta * multiplier;
+      circle.position.y +=
+        movement.velocity.y * movement.acceleration.y * delta * multiplier;
 
-            if (movement.acceleration.x > 1)
-                movement.acceleration.x -= delta * multiplier;
-            if (movement.acceleration.y > 1)
-                movement.acceleration.y -= delta * multiplier;
-            if (movement.acceleration.x < 1) movement.acceleration.x = 1;
-            if (movement.acceleration.y < 1) movement.acceleration.y = 1;
+      if (movement.acceleration.x > 1)
+        movement.acceleration.x -= delta * multiplier;
+      if (movement.acceleration.y > 1)
+        movement.acceleration.y -= delta * multiplier;
+      if (movement.acceleration.x < 1) movement.acceleration.x = 1;
+      if (movement.acceleration.y < 1) movement.acceleration.y = 1;
 
-            if (circle.position.y + circle.radius < 0)
-                circle.position.y = canvasHeight + circle.radius;
+      if (circle.position.y + circle.radius < 0)
+        circle.position.y = canvasHeight + circle.radius;
 
-            if (circle.position.y - circle.radius > canvasHeight)
-                circle.position.y = -circle.radius;
+      if (circle.position.y - circle.radius > canvasHeight)
+        circle.position.y = -circle.radius;
 
-            if (circle.position.x - circle.radius > canvasWidth)
-                circle.position.x = 0;
+      if (circle.position.x - circle.radius > canvasWidth)
+        circle.position.x = 0;
 
-            if (circle.position.x + circle.radius < 0)
-                circle.position.x = canvasWidth;
-        }
+      if (circle.position.x + circle.radius < 0)
+        circle.position.x = canvasWidth;
     }
+  }
 }
 
 export class IntersectionSystem extends System {
-    static queries = {
-        entities: { components: [Circle] }
-    }
+  static queries = {
+    entities: { components: [Circle] },
+  };
 
-    execute() {
-        let entities = this.queries.entities.results;
+  execute() {
+    let entities = this.queries.entities.results;
 
-        for (var i = 0; i < entities.length; i++) {
-            let entity = entities[i];
+    for (var i = 0; i < entities.length; i++) {
+      let entity = entities[i];
 
-            if (entity.hasComponent(Intersecting)) {
-                entity.getMutableComponent(Intersecting).points = [];
-            }
+      if (entity.hasComponent(Intersecting)) {
+        entity.getMutableComponent(Intersecting).points = [];
+      }
 
-            let circle = entity.getComponent(Circle);
+      let circle = entity.getComponent(Circle);
 
-            for (var j = i + 1; j < entities.length; j++) {
-                let entityB = entities[j];
-                let circleB = entityB.getComponent(Circle);
+      for (var j = i + 1; j < entities.length; j++) {
+        let entityB = entities[j];
+        let circleB = entityB.getComponent(Circle);
 
-                var intersect = intersection(circle, circleB);
-                if (intersect !== false) {
-                    var intersectComponent;
-                    if (!entity.hasComponent(Intersecting)) {
-                        entity.addComponent(Intersecting);
-                    }
-                    intersectComponent = entity.getMutableComponent(Intersecting);
-                    intersectComponent.points.push(...intersect);
-                }
-            }
-
-            if (
-                entity.hasComponent(Intersecting) &&
-                entity.getComponent(Intersecting).points.length === 0
-            ) {
-                entity.removeComponent(Intersecting);
-            }
+        var intersect = intersection(circle, circleB);
+        if (intersect !== false) {
+          var intersectComponent;
+          if (!entity.hasComponent(Intersecting)) {
+            entity.addComponent(Intersecting);
+          }
+          intersectComponent = entity.getMutableComponent(Intersecting);
+          intersectComponent.points.push(...intersect);
         }
-    }
+      }
 
-    stop() {
-        super.stop();
-        // Clean up interesection when stopping
-        // let entities = this.queries.entities;
-        let entities = this.queries.entities.results;
-
-        for (var i = 0; i < entities.length; i++) {
-            let entity = entities[i];
-            if (entity.hasComponent(Intersecting)) {
-                entity.getMutableComponent(Intersecting).points = [];
-            }
-        }
+      if (
+        entity.hasComponent(Intersecting) &&
+        entity.getComponent(Intersecting).points.length === 0
+      ) {
+        entity.removeComponent(Intersecting);
+      }
     }
+  }
+
+  stop() {
+    super.stop();
+    // Clean up interesection when stopping
+    // let entities = this.queries.entities;
+    let entities = this.queries.entities.results;
+
+    for (var i = 0; i < entities.length; i++) {
+      let entity = entities[i];
+      if (entity.hasComponent(Intersecting)) {
+        entity.getMutableComponent(Intersecting).points = [];
+      }
+    }
+  }
 }
 
 // export class Renderer extends System {
@@ -169,3 +176,41 @@ export class IntersectionSystem extends System {
 //   intersectingCircles: { components: [Intersecting] },
 //   context: { components: [CanvasContext], mandatory: true }
 // };
+
+export class MessageSystem extends System {
+  static queries = {
+    messages: {
+      components: [MessageComponent],
+      listen: { added: true },
+    },
+  };
+
+  execute(): void {
+    const entities = this.queries.messages.results;
+
+    if (!entities.length) return;
+
+    console.log(`There were ${entities.length} messages`);
+
+    entities.forEach((message) => {
+      message.remove();
+    });
+  }
+}
+
+export class ClientMessageSystem extends System {
+  static queries = {
+    messages: {
+      components: [MessageComponent],
+      listen: { added: true },
+    },
+  };
+
+  execute(): void {
+    const entities = this.queries.messages.results;
+
+    if (!entities.length) return;
+
+    console.log(`There were ${entities.length} messages`, entities);
+  }
+}

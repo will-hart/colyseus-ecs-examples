@@ -64,7 +64,7 @@ export function getRendererSystem(ctx: CanvasRenderingContext2D) {
         let intersect = intersectingCircles[i].getComponent(Intersecting);
 
         if (!intersect) {
-          console.log("intersect component not found.");
+          // console.log("intersect component not found.");
           continue;
         }
 
